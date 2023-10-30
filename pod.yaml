@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-stress-test-pod
+spec:
+  containers:
+  - name: redis-stress-test-container
+    image: gcr.io/altenar-dev-sbenvs/redis-stress-test:latest
+    imagePullPolicy: Always
+    env:
+      - name: REDIS_SENTINEL_HOSTNAME
+        value: redis-default:26379  # Replace with your Redis Sentinel hostname
+      - name: TOTAL_OPERATIONS
+        value: "1000000"                        # Replace with the desired number of operations
+      - name: REDIS_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: redis-password-secret      # Name of the Secret
+            key: password          # Key within the Secret
+  imagePullSecrets:
+  - name: gcr-json-key

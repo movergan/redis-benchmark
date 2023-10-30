@@ -1,0 +1,50 @@
+version: '2'
+
+services:
+  redis-sentinel:
+    image: docker.io/bitnami/redis-sentinel:7.2
+#    volumes:
+#      - redis-sentinel_data:/bitnami
+    networks:
+      - redis-net
+    ports:
+      - "26379:26379"
+  redis:
+    image: docker.io/bitnami/redis:7.2
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_AOF_ENABLED=no
+      - REDIS_IO_THREADS=4
+      - REDIS_IO_THREADS_DO_READS=yes
+    command: /opt/bitnami/scripts/redis/run.sh --loglevel verbose
+#    volumes:
+#      - redis_data:/bitnami
+    networks:
+      - redis-net
+    ports:
+      - "6379:6379"
+  app-1:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_SENTINEL_HOSTNAME=redis-sentinel
+      - REDIS_PASSWORD=
+      - TOTAL_OPERATIONS=100
+    networks:
+      - redis-net
+    depends_on:
+      - redis
+      - redis-sentinel
+
+
+
+#volumes:
+#  redis-sentinel_data:
+#    driver: local
+#  redis_data:
+#    driver: local
+
+networks:
+  redis-net:
+
