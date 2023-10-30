@@ -45,7 +45,7 @@ class Program
             string value = GenerateRandomString(400 * 1024); // 400KB string
 
             // Asynchronously set the value
-            redis.StringSet(key, value);
+            redis.StringSet(key, value, TimeSpan.FromSeconds(5));
 
             // Asynchronously get the value
             string storedValue = redis.StringGet(key,CommandFlags.PreferReplica);
